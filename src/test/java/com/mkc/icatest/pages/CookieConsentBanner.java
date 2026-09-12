@@ -32,7 +32,7 @@ public class CookieConsentBanner extends BasePage {
 	public boolean acceptAllIfPresent() {
 		return findFirstVisible(ACCEPT_ALL_CANDIDATES, Duration.ofSeconds(5))
 				.map(button -> {
-					button.click();
+					clickReliably(button);
 					return true;
 				})
 				.orElse(false);

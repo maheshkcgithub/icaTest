@@ -23,7 +23,15 @@ public class HomePage extends BasePage {
 			By.cssSelector("[data-testid*='search' i] button"),
 			By.cssSelector("button[class*='search' i]"));
 
+	// Header-scoped selectors are tried first so a hidden/off-canvas input
+	// elsewhere on the page (e.g. a hidden mobile drawer, or a footer form)
+	// that also happens to match isn't picked up instead of the visible one.
 	private static final List<By> SEARCH_INPUT_CANDIDATES = List.of(
+			By.cssSelector("header input[type='search']"),
+			By.cssSelector("header input[placeholder*='ök' i]"),
+			By.cssSelector("header input[aria-label*='ök' i]"),
+			By.cssSelector("header input[name='q']"),
+			By.cssSelector("header [data-testid*='search' i] input"),
 			By.cssSelector("input[type='search']"),
 			By.cssSelector("input[placeholder*='ök' i]"),
 			By.cssSelector("input[aria-label*='ök' i]"),
@@ -58,7 +66,7 @@ public class HomePage extends BasePage {
 	public WebElement openSearchBox() {
 		return findFirstVisible(SEARCH_INPUT_CANDIDATES, Duration.ofSeconds(3))
 				.orElseGet(() -> {
-					findFirstVisible(SEARCH_TOGGLE_CANDIDATES, Duration.ofSeconds(5)).ifPresent(WebElement::click);
+					findFirstVisible(SEARCH_TOGGLE_CANDIDATES, Duration.ofSeconds(5)).ifPresent(this::clickReliably);
 					return findFirstVisible(SEARCH_INPUT_CANDIDATES, Duration.ofSeconds(TestConfig.TIMEOUT_SECONDS))
 							.orElseThrow(() -> new IllegalStateException(
 									"Could not locate the search input via any known selector. "
@@ -68,7 +76,7 @@ public class HomePage extends BasePage {
 
 	public void searchFor(String query) {
 		WebElement searchBox = openSearchBox();
-		searchBox.click();
+		clickReliably(searchBox);
 		searchBox.sendKeys(query);
 		searchBox.sendKeys(Keys.ENTER);
 	}

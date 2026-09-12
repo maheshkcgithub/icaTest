@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -32,6 +34,22 @@ public abstract class BasePage {
 
 	protected WebElement waitClickable(By locator) {
 		return wait.until(ExpectedConditions.elementToBeClickable(locator));
+	}
+
+	/**
+	 * Scrolls the element into the center of the viewport and clicks it,
+	 * falling back to a JavaScript click if the browser reports the point as
+	 * covered by another element (e.g. a sticky header, or a slide-out panel
+	 * that "isDisplayed()" doesn't detect as visually obscured).
+	 */
+	protected void clickReliably(WebElement element) {
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].scrollIntoView({block: 'center', inline: 'center'});", element);
+		try {
+			element.click();
+		} catch (ElementClickInterceptedException e) {
+			js.executeScript("arguments[0].click();", element);
+		}
 	}
 
 	/**
