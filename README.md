@@ -44,6 +44,21 @@ mvn test -DtimeoutSeconds=20
 - `SearchTest` — searching for a product ("mjölk") navigates to a results
   page that references the search term.
 
+## One-off tools
+
+`src/main/java/com/mkc/icatest/tools/MilkPriceLookup.java` is not a test —
+it's a standalone script that searches ica.se for "mjölk 3%" and prints any
+page lines mentioning "3 %" plus every price-like token it finds, so you can
+read the actual price back from the console output. Run its `main` method
+directly in IntelliJ, or:
+
+```bash
+mvn -q compile exec:java -Dexec.mainClass="com.mkc.icatest.tools.MilkPriceLookup"
+```
+
+It runs with a visible (non-headless) browser window by default so you can
+watch what it's doing.
+
 ## Structure
 
 ```
